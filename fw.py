@@ -24,17 +24,27 @@ class RULE:
 
     def inrange(self, adder, por):
         """see if incoming address is in this rules range"""
-        if IPAddress(adder) in IPNetwork(self.addresses):
-            if por in self.port:
-                self.tostring(por)
+        if self.addresses == '*':
+            if '*' in self.port:
+                self.tostring(adder, por)
+                return True
+            elif por in self.port:
+                self.tostring(adder, por)
+                return True
+        elif IPAddress(adder) in IPNetwork(self.addresses):
+            if '*' in self.port:
+                self.tostring(adder, por)
+                return True
+            elif por in self.port:
+                self.tostring(adder, por)
                 return True
             return False
         else:
             return False
 
-    def tostring(self, por):
+    def tostring(self, adder, por):
         """print the rule when something goes through"""
-        print '{2}({1}) {0} {3} {4} {5}\n'.format(self.direction, self.linenumber, self.action, adder, por, self.flag)
+        print ("{2}({1}) {0} {3} {4} {5}".format(self.direction, self.linenumber, self.action, adder, por, self.flag))
 
 
 
@@ -75,11 +85,12 @@ for line in CONFIGURATION:
                 pass
         #see if the flag is set
         elif len(output) == 5:
-            x = RULE(output[0], atline, output[1], output[2], output[3], 1)
-            if output[0] == 'in':
-                inest.append(x)
-            elif output[0] == 'out':
-                outest.append(x)
+            if output[4] == 'established':
+                x = RULE(output[0], atline, output[1], output[2], output[3], 1)
+                if output[0] == 'in':
+                    inest.append(x)
+                elif output[0] == 'out':
+                    outest.append(x)
         #not a comment and not a rule
         else:
             pass
@@ -97,7 +108,31 @@ while True:
     else:
         if conn[0] == 'in' and conn[3] == 0:
             for rule in innest:
-                if rule.inrange(conn[1], conn[2]) == True:
+                rulefound = rule.inrange(conn[1], conn[2])
+                if rulefound:
                     break
+            if not rulefound:
+                print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
+        elif conn[0] == 'in' and conn[3] == 1:
+            for rule in inest:
+                rulefound = rule.inrange(conn[1], conn[2])
+                if rulefound:
+                    break
+            if not rulefound:
+                print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
+        elif conn[0] == 'out' and conn[3] == 0:
+            for rule in outnest:
+                rulefound = rule.inrange(conn[1], conn[2])
+                if rulefound:
+                    break
+            if not rulefound:
+                print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
+        elif conn[0] == 'out' and conn[3] == 1:
+            for rule in outest:
+                rulefound = rule.inrange(conn[1], conn[2])
+                if rulefound:
+                    break
+            if not rulefound:
+                print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
         else:
-            pass
+            print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
