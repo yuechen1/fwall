@@ -46,10 +46,14 @@ class RULE:
         """print the rule when something goes through"""
         print ("{2}({1}) {0} {3} {4} {5}".format(self.direction, self.linenumber, self.action, adder, por, self.flag))
 
+    def printself(self):
+        """print the rule out, for debuging only"""
+        print ("{0} {1} {2} {3} {4} {5}".format(self.direction, self.linenumber, self.action, self.addresses, self.port, self.flag))
+
 
 
 #check the number of arguments
-if sys.argv[1] < 2:
+if len(sys.argv) < 2:
     sys.exit('invalid input')
 
 #open configuration file
@@ -101,7 +105,7 @@ for line in CONFIGURATION:
 #get connections from console, check to see if its one of the rules
 rulefound = False
 while True:
-    connection = raw_input()
+    connection = input()
     conn = connection.split()
     if len(conn) != 4:
         pass
@@ -112,27 +116,27 @@ while True:
                 if rulefound:
                     break
             if not rulefound:
-                print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
+                print("drop( ) {0} {1} {2} {3}".format(conn[0], conn[1], conn[2], conn[3]))
         elif conn[0] == 'in' and conn[3] == 1:
             for rule in inest:
                 rulefound = rule.inrange(conn[1], conn[2])
                 if rulefound:
                     break
             if not rulefound:
-                print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
+                print("drop( ) {0} {1} {2} {3}".format(conn[0], conn[1], conn[2], conn[3]))
         elif conn[0] == 'out' and conn[3] == 0:
             for rule in outnest:
                 rulefound = rule.inrange(conn[1], conn[2])
                 if rulefound:
                     break
             if not rulefound:
-                print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
+                print("drop( ) {0} {1} {2} {3}".format(conn[0], conn[1], conn[2], conn[3]))
         elif conn[0] == 'out' and conn[3] == 1:
             for rule in outest:
                 rulefound = rule.inrange(conn[1], conn[2])
                 if rulefound:
                     break
             if not rulefound:
-                print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
+                print("drop( ) {0} {1} {2} {3}".format(conn[0], conn[1], conn[2], conn[3]))
         else:
-            print 'drop( ) {} {} {} {}'.format(conn[0], conn[1], conn[2], conn[3])
+            print("drop( ) {0} {1} {2} {3}".format(conn[0], conn[1], conn[2], conn[3]))
