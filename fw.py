@@ -61,10 +61,10 @@ FILENAME = sys.argv[1]
 CONFIGURATION = open("%s" % sys.argv[1], 'r')
 
 
-inest = list()
-innest = list()
-outest = list()
-outnest = list()
+inest = []
+innest = []
+outest = []
+outnest = []
 
 #read rule from file
 # if it start with # then the line is droped
@@ -73,9 +73,9 @@ outnest = list()
 atline = 0
 for line in CONFIGURATION:
     output = line.split()
-    if output == '\n':
+    if not (len(output) == 4 or len(output) == 5):
         pass
-    elif output[1][0] == '#':
+    elif output[0][0] == '#':
         pass
     else:
         #see if the flag is there
@@ -102,36 +102,53 @@ for line in CONFIGURATION:
     atline += 1
 
 
+#debuging stuff
+#print('in and not established')
+#for rule in innest:
+#    rule.printself()
+#print('in and established')
+#for rule in inest:
+#    rule.printself()
+#print('out and not established')
+#for rule in outnest:
+#    rule.printself()
+#print('out and established')
+#for rule in outest:
+#    rule.printself()
+
+
+
 #get connections from console, check to see if its one of the rules
 rulefound = False
 while True:
     connection = input()
     conn = connection.split()
     if len(conn) != 4:
+        print(len(conn))
         pass
     else:
-        if conn[0] == 'in' and conn[3] == 0:
+        if conn[0] == 'in' and conn[3] == '0':
             for rule in innest:
                 rulefound = rule.inrange(conn[1], conn[2])
                 if rulefound:
                     break
             if not rulefound:
                 print("drop( ) {0} {1} {2} {3}".format(conn[0], conn[1], conn[2], conn[3]))
-        elif conn[0] == 'in' and conn[3] == 1:
+        elif conn[0] == 'in' and conn[3] == '1':
             for rule in inest:
                 rulefound = rule.inrange(conn[1], conn[2])
                 if rulefound:
                     break
             if not rulefound:
                 print("drop( ) {0} {1} {2} {3}".format(conn[0], conn[1], conn[2], conn[3]))
-        elif conn[0] == 'out' and conn[3] == 0:
+        elif conn[0] == 'out' and conn[3] == '0':
             for rule in outnest:
                 rulefound = rule.inrange(conn[1], conn[2])
                 if rulefound:
                     break
             if not rulefound:
                 print("drop( ) {0} {1} {2} {3}".format(conn[0], conn[1], conn[2], conn[3]))
-        elif conn[0] == 'out' and conn[3] == 1:
+        elif conn[0] == 'out' and conn[3] == '1':
             for rule in outest:
                 rulefound = rule.inrange(conn[1], conn[2])
                 if rulefound:
