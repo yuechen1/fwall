@@ -3,7 +3,7 @@
 # pylint: disable=R0903
 # pylint: disable=C0301
 import sys
-from netaddr import IPNetwork, IPAddress
+import ipaddress
 
 class RULE:
     """"to hold the rule, the direction of packet and establishment is not kept here"""
@@ -18,12 +18,16 @@ class RULE:
         self.direction = dire
         self.linenumber = number
         self.action = act
-        self.addresses = addr
+        if addr == '*':
+            self.addresses == addr
+        else:
+            self.addresses = ipaddress.ip_network(addr)
         self.port = por.split(',')
         self.flag = fl
 
     def inrange(self, adder, por):
         """see if incoming address is in this rules range"""
+        tempadr = ipaddress.ip_address(adder)
         if self.addresses == '*':
             if '*' in self.port:
                 self.tostring(adder, por)
@@ -31,7 +35,7 @@ class RULE:
             elif por in self.port:
                 self.tostring(adder, por)
                 return True
-        elif IPAddress(adder) in IPNetwork(self.addresses):
+        elif tempadr in self.addresses:
             if '*' in self.port:
                 self.tostring(adder, por)
                 return True
