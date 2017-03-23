@@ -124,8 +124,7 @@ for line in CONFIGURATION:
 
 #get connections from console, check to see if its one of the rules
 rulefound = False
-while True:
-    connection = input()
+for connection in sys.stdin:
     conn = connection.split()
     if len(conn) != 4:
         print(len(conn))
