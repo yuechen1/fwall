@@ -21,13 +21,19 @@ class RULE:
         if addr == '*':
             self.addresses == addr
         else:
-            self.addresses = ipaddress.ip_network(addr)
+            try:
+                self.addresses = ipaddress.ip_network(addr)
+            except ValueError:
+                print('not a valid network: ', addr)
         self.port = por.split(',')
         self.flag = fl
 
     def inrange(self, adder, por):
         """see if incoming address is in this rules range"""
-        tempadr = ipaddress.ip_address(adder)
+        try:
+            tempadr = ipaddress.ip_address(adder)
+        except ValueError:
+            print('not a valid address: ', adder)
         if self.addresses == '*':
             if '*' in self.port:
                 self.tostring(adder, por)
@@ -92,7 +98,7 @@ for line in CONFIGURATION:
             else:
                 pass
         #see if the flag is set
-        elif len(output) == 5:
+        elif len(output) == 5 and output[4] == 'established':
             if output[4] == 'established':
                 x = RULE(output[0], atline, output[1], output[2], output[3], 1)
                 if output[0] == 'in':
