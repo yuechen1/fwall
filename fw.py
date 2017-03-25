@@ -19,12 +19,12 @@ class RULE:
         self.linenumber = number
         self.action = act
         if addr == '*':
-            self.addresses == addr
+            self.addresses = addr
         else:
             try:
-                self.addresses = ipaddress.ip_network(addr)
+                self.addresses = ipaddress.IPv4Network(addr, True)
             except ValueError:
-                print('not a valid network: ', addr)
+                print('cant get network: ', addr)
         self.port = por.split(',')
         self.flag = fl
 
